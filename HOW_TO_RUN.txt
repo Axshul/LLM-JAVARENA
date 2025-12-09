@@ -1,0 +1,38 @@
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║           LLM COUNCIL ARENA - HOW TO RUN                  ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+
+SUPER SIMPLE - 3 WAYS TO RUN:
+
+┌────────────────────────────────────────────────────────────┐
+│  METHOD 1: ONE COMMAND (Recommended)                       │
+└────────────────────────────────────────────────────────────┘
+
+   Double-click:  start.bat
+   
+   (Auto-builds first time, then runs)
+
+
+┌────────────────────────────────────────────────────────────┐
+│  METHOD 2: BUILD ONCE, RUN MANY                            │
+└────────────────────────────────────────────────────────────┘
+
+   First time:    build.bat
+   Every time:    run.bat
+
+
+┌────────────────────────────────────────────────────────────┐
+│  METHOD 3: MANUAL (If you like typing)                     │
+└────────────────────────────────────────────────────────────┘
+
+   javac -d target\classes -cp "target\lib\*" src\main\java\org\example\*.java
+   java -cp "target\classes;target\lib\*" org.example.App
+
+
+╔════════════════════════════════════════════════════════════╗
+║  THAT'S IT! Just run start.bat and you're good to go!     ║
+╚════════════════════════════════════════════════════════════╝
+
+Need help? Type 'help' in the app.

@@ -1,0 +1,35 @@
+# LLM-JAVARENA API Configuration Template
+# Copy these keys to src/main/java/org/example/App.java
+
+# ============================================
+# GEMINI API KEYS
+# ============================================
+# Get your keys at: https://makersuite.google.com/app/apikey
+
+GEMINI_KEY_1=AIzaSyDFSJrZO5-GBbJLdq8mGnejJuUwIALPec0
+GEMINI_KEY_2=AIzaSyD5Ul5g0OA3CLtRO9Qcp1h6DaK2hJGKyOg
+GEMINI_KEY_3=AIzaSyCmhsrtLnsCedmwOSidWg9bPFw66KwjPlsAIzaSyD3LbC9tsiXUOvcYRk9S_QNcltETnaOxO0
+
+# ============================================
+# N8N WEBHOOK (Optional)
+# ============================================
+# Format: https://your-n8n-instance.com/webhook/your-webhook-id
+# Leave as placeholder if not using n8n
+
+N8N_WEBHOOK=https://your-n8n-instance.com/webhook/your-id
+
+# ============================================
+# INSTRUCTIONS
+# ============================================
+# 1. Replace the placeholder values above with your actual API keys
+# 2. Open: src/main/java/org/example/App.java
+# 3. Update the GEMINI_KEYS array with your keys
+# 4. Update the N8N_WEBHOOK with your webhook URL (if using n8n)
+# 5. Save and run the application
+
+# ============================================
+# SECURITY NOTE
+# ============================================
+# ⚠️  NEVER commit API keys to version control!
+# ⚠️  This file is in .gitignore for your safety
+# ⚠️  Keep your API keys private and secure
