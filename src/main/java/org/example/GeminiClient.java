@@ -9,7 +9,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class GeminiClient extends LLMClient {
-    private static final String API_BASE = "https://generativelanguage.googleapis.com/v1beta/models/";
+    private static final String API_BASE = "https://generativelanguage.googleapis.com/v1/models/";
     private final Gson gson;
     private final String model;
     private int inputTokens = 0;

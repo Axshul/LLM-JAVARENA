@@ -6,9 +6,10 @@
 # ============================================
 # Get your keys at: https://makersuite.google.com/app/apikey
 
-GEMINI_KEY_1=AIzaSyDFSJrZO5-GBbJLdq8mGnejJuUwIALPec0
-GEMINI_KEY_2=AIzaSyD5Ul5g0OA3CLtRO9Qcp1h6DaK2hJGKyOg
-GEMINI_KEY_3=AIzaSyCmhsrtLnsCedmwOSidWg9bPFw66KwjPlsAIzaSyD3LbC9tsiXUOvcYRk9S_QNcltETnaOxO0
+GEMINI_KEY_1=your_gemini_key_1_here
+GEMINI_KEY_2=your_gemini_key_2_here
+GEMINI_KEY_3=your_gemini_key_3_here
+GEMINI_KEY_4=your_gemini_key_4_here
 
 # ============================================
 # N8N WEBHOOK (Optional)

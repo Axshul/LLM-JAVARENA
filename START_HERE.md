@@ -24,12 +24,12 @@ Don't have them? → See [SETUP.md](SETUP.md)
 
 ### 2️⃣ Configure Your API Keys
 
-Your Gemini API keys are already in the code:
-- Key 1: `AIzaSyDFSJrZO5-GBbJLdq8mGnejJuUwIALPec0`
-- Key 2: `AIzaSyD5Ul5g0OA3CLtRO9Qcp1h6DaK2hJGKyOg`
-- Key 3: `AIzaSyCmhsrtLnsCedmwOSidWg9bPFw66KwjPls`
+Add your API keys to the `.env` file:
+- Groq API key
+- OpenRouter API key
+- Gemini API keys (optional)
 
-They're in: `src/main/java/org/example/App.java`
+Edit: `.env` file in the project root
 
 Need new keys? → https://makersuite.google.com/app/apikey
 

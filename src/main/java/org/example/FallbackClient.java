@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 public class FallbackClient extends LLMClient {
     private static final String BASE_URL = Config.get("N8N_WEBHOOK_URL", 
-        "https://71245c5b4176.ngrok-free.app/webhook/LLM-ARENA-JAVA-TUI-PROJECT");
+        "");
     private final Gson gson;
     
     public FallbackClient() {

@@ -68,7 +68,7 @@ ULTIMATE FALLBACK (n8n webhook)
 ALWAYS WORKS!
 ```
 
-**URL:** `https://71245c5b4176.ngrok-free.app/webhook/LLM-ARENA-JAVA-TUI-PROJECT?prompt=<your_question>`
+**URL:** `your_n8n_webhook_url?prompt=<your_question>`
 
 **Features:**
 - Automatically called if all models fail
@@ -205,7 +205,7 @@ private String evaluateResponses(String originalQuestion, List<CouncilResponse> 
 ```java
 public class FallbackClient extends LLMClient {
     private static final String BASE_URL = 
-        "https://71245c5b4176.ngrok-free.app/webhook/LLM-ARENA-JAVA-TUI-PROJECT";
+        Config.get("N8N_WEBHOOK_URL", "your_n8n_webhook_url_here");
     
     @Override
     public String sendMessage(String message) throws IOException {

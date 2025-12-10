@@ -41,6 +41,7 @@ Thumbs.db
 
 # API Keys (DO NOT COMMIT!)
 .env
+.env.SECURE
 *.env
 !.env.example
 config.properties
@@ -48,3 +49,5 @@ secrets.properties
 
 # Sensitive data
 **/App.java.backup
+**/TestGemini.java
+test-gemini.bat

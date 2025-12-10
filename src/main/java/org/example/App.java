@@ -10,12 +10,13 @@ public class App {
     private static final String GROQ_API_KEY = Config.get("GROQ_API_KEY", "");
     private static final String OPENROUTER_API_KEY = Config.get("OPENROUTER_API_KEY", "");
     
-    // Gemini keys (backup)
+    // Gemini keys (3 working keys)
     private static final String[] GEMINI_KEYS = {
         Config.get("GEMINI_KEY_1", ""),
         Config.get("GEMINI_KEY_2", ""),
         Config.get("GEMINI_KEY_3", ""),
-        Config.get("GEMINI_KEY_4", "")
+        Config.get("GEMINI_KEY_4", ""),
+        Config.get("GEMINI_KEY_5", "")
     };
     
     public static void main(String[] args) {
@@ -35,7 +36,7 @@ public class App {
         // Add OpenRouter models (diverse selection)
         addOpenRouterModels(council);
         
-        // Add Gemini models (backup)
+        // Add Gemini models (3 working keys with gemini-2.5-flash-lite)
         addGeminiModels(council);
         
         System.out.println();
@@ -158,6 +159,7 @@ public class App {
     private static void addOpenRouterModels(LLMCouncil council) {
         // OpenRouter models - diverse and powerful
         String[][] openRouterModels = {
+            {"openrouter-deepseek", "deepseek/deepseek-chat"},
             {"openrouter-llama-3.1-8b", "meta-llama/llama-3.1-8b-instruct:free"},
             {"openrouter-mistral-7b", "mistralai/mistral-7b-instruct:free"},
             {"openrouter-phi-3", "microsoft/phi-3-mini-128k-instruct:free"}
@@ -173,18 +175,15 @@ public class App {
     }
     
     private static void addGeminiModels(LLMCouncil council) {
-        // Gemini models - smaller, more reliable models
-        String[] geminiModels = {
-            "gemini-1.5-flash-8b",      // Smallest, fastest
-            "gemini-1.5-flash",          // Balanced
-            "gemini-1.0-pro",            // Stable, reliable
-            "gemini-1.5-flash-8b"        // Duplicate for 4th key
-        };
+        // Gemini models - using gemini-2.5-flash-lite (smaller model as requested)
+        String model = "gemini-2.5-flash-lite";
         
-        for (int i = 0; i < Math.min(GEMINI_KEYS.length, geminiModels.length); i++) {
-            if (GEMINI_KEYS[i] != null && !GEMINI_KEYS[i].isEmpty()) {
+        for (int i = 0; i < GEMINI_KEYS.length; i++) {
+            String key = GEMINI_KEYS[i];
+            if (key != null && !key.isEmpty()) {
                 try {
-                    council.addMember(new GeminiClient("gemini-" + (i + 1), GEMINI_KEYS[i], geminiModels[i]));
+                    String name = "gemini-" + (i + 1);
+                    council.addMember(new GeminiClient(name, key, model));
                 } catch (Exception e) {
                     CLIRenderer.printWarning("Failed to add gemini-" + (i + 1));
                 }

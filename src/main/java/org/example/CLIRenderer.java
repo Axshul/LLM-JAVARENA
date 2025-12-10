@@ -45,7 +45,7 @@ public class CLIRenderer {
         System.out.println();
         System.out.println(CYAN + "  +---------------------------------------------------------------------------+");
         System.out.println(CYAN + "  |" + RESET + "  " + WHITE + BOLD + "Powered by: Groq, OpenRouter & Gemini" + RESET + "                                " + CYAN + "|");
-        System.out.println(CYAN + "  |" + RESET + "  " + WHITE + "8 AI Models | Real-time Responses | Token Tracking" + RESET + "                 " + CYAN + "|");
+        System.out.println(CYAN + "  |" + RESET + "  " + WHITE + "10 AI Models | Real-time Responses | Token Tracking" + RESET + "                " + CYAN + "|");
         System.out.println(CYAN + "  +---------------------------------------------------------------------------+" + RESET);
         System.out.println();
         System.out.println(WHITE + "  Type 'help' for commands  |  'exit' to quit  |  '/council' for all models" + RESET);

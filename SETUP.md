@@ -52,12 +52,11 @@ sudo yum install maven  # CentOS/RHEL
 
 Open `src/main/java/org/example/App.java` and update the Gemini API keys:
 
-```java
-private static final String[] GEMINI_KEYS = {
-    "AIzaSyDFSJrZO5-GBbJLdq8mGnejJuUwIALPec0",  // Your Key 1
-    "AIzaSyD5Ul5g0OA3CLtRO9Qcp1h6DaK2hJGKyOg",  // Your Key 2
-    "AIzaSyCmhsrtLnsCedmwOSidWg9bPFw66KwjPls"   // Your Key 3
-};
+```bash
+# Edit the .env file
+GEMINI_KEY_1=your_actual_key_here
+GEMINI_KEY_2=your_actual_key_here
+GEMINI_KEY_3=your_actual_key_here
 ```
 
 ### 2. Configure n8n Webhook (Optional)

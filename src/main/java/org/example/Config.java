@@ -54,6 +54,9 @@ public class Config {
         String gemini4 = System.getenv("GEMINI_KEY_4");
         if (gemini4 != null) props.setProperty("GEMINI_KEY_4", gemini4);
         
+        String gemini5 = System.getenv("GEMINI_KEY_5");
+        if (gemini5 != null) props.setProperty("GEMINI_KEY_5", gemini5);
+        
         String n8nUrl = System.getenv("N8N_WEBHOOK_URL");
         if (n8nUrl != null) props.setProperty("N8N_WEBHOOK_URL", n8nUrl);
         
