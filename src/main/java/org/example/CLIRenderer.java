@@ -38,17 +38,14 @@ public class CLIRenderer {
     public static void printBanner() {
         clear();
         System.out.println();
-        System.out.println(BG_CYAN + WHITE + BOLD + "                                                                              " + RESET);
-        System.out.println(BG_CYAN + WHITE + BOLD + "                    AI  COUNCIL  ARENA  v2.0                                  " + RESET);
-        System.out.println(BG_CYAN + WHITE + BOLD + "                    Multi-Provider AI Command Center                          " + RESET);
-        System.out.println(BG_CYAN + WHITE + BOLD + "                                                                              " + RESET);
+        System.out.println(CYAN + BOLD + "  ╔══════════════════════════════════════════════════════════════════════════╗" + RESET);
+        System.out.println(CYAN + BOLD + "  ║" + RESET + "                                                                      " + CYAN + BOLD + "║" + RESET);
+        System.out.println(CYAN + BOLD + "  ║" + RESET + "              " + RED + BOLD + "🔥 AI COUNCIL ARENA v2.0 🔥" + RESET + "                      " + CYAN + BOLD + "║" + RESET);
+        System.out.println(CYAN + BOLD + "  ║" + RESET + "              " + WHITE + "Multi-Provider AI Command Center" + RESET + "              " + CYAN + BOLD + "║" + RESET);
+        System.out.println(CYAN + BOLD + "  ║" + RESET + "                                                                      " + CYAN + BOLD + "║" + RESET);
+        System.out.println(CYAN + BOLD + "  ╚══════════════════════════════════════════════════════════════════════════╝" + RESET);
         System.out.println();
-        System.out.println(CYAN + "  +---------------------------------------------------------------------------+");
-        System.out.println(CYAN + "  |" + RESET + "  " + WHITE + BOLD + "Powered by: Groq, OpenRouter & Gemini" + RESET + "                                " + CYAN + "|");
-        System.out.println(CYAN + "  |" + RESET + "  " + WHITE + "10 AI Models | Real-time Responses | Token Tracking" + RESET + "                " + CYAN + "|");
-        System.out.println(CYAN + "  +---------------------------------------------------------------------------+" + RESET);
-        System.out.println();
-        System.out.println(WHITE + "  Type 'help' for commands  |  'exit' to quit  |  '/council' for all models" + RESET);
+        System.out.println(DIM + "  ⚡ Groq • OpenRouter • 14x Gemini APIs • Load Balanced • Health Monitored" + RESET);
         System.out.println();
     }
     
@@ -214,9 +211,9 @@ public class CLIRenderer {
     
     public static void printModelStatus(String modelName, String provider, String modelId, boolean available) {
         String statusColor = available ? GREEN : RED;
-        String statusText = available ? "ONLINE " : "OFFLINE";
+        String statusText = available ? "🔥 BLAZING" : "💀 DEAD";
         String providerBadge = getProviderBadge(provider);
-        System.out.println("  " + providerBadge + " " + CYAN + modelName + RESET + " " + DIM + "(" + modelId + ")" + RESET + " " + statusColor + BOLD + statusText + RESET);
+        System.out.println("  " + providerBadge + " " + CYAN + BOLD + modelName + RESET + " " + DIM + "(" + modelId + ")" + RESET + " " + statusColor + BOLD + statusText + RESET);
     }
     
     private static String getProviderBadge(String provider) {
@@ -274,5 +271,38 @@ public class CLIRenderer {
     
     public static void printModelQuerying(String modelName, int index, int total) {
         System.out.println(CYAN + "  [" + index + "/" + total + "] " + RESET + "Querying " + BOLD + modelName + RESET + "...");
+    }
+    
+    // Enhanced methods for FLAMIN' experience
+    public static void printFlaminHeader(String title) {
+        System.out.println();
+        System.out.println(RED + "  🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥" + RESET);
+        System.out.println(RED + "  🔥" + RESET + YELLOW + BOLD + "  " + title + RESET + RED + "  🔥" + RESET);
+        System.out.println(RED + "  🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥" + RESET);
+        System.out.println();
+    }
+    
+    public static void printHealthCheckStart() {
+        System.out.println();
+        System.out.println(YELLOW + "  ╔═══════════════════════════════════════════════════════════════════════════╗" + RESET);
+        System.out.println(YELLOW + "  ║" + RESET + BOLD + "                        🏥 HEALTH CHECK INITIATED 🏥                        " + RESET + YELLOW + "║" + RESET);
+        System.out.println(YELLOW + "  ╚═══════════════════════════════════════════════════════════════════════════╝" + RESET);
+        System.out.println();
+    }
+    
+    public static void printLoadBalanceInfo(String modelName, int usageCount) {
+        System.out.println(DIM + "  ⚖️  Load balancer → " + RESET + BOLD + modelName + RESET + DIM + " (used " + usageCount + "x)" + RESET);
+    }
+    
+    public static void printFlaminSuccess(String message) {
+        System.out.println(GREEN + "  🔥✅ " + BOLD + message + RESET);
+    }
+    
+    public static void printFlaminError(String message) {
+        System.out.println(RED + "  🔥❌ " + BOLD + message + RESET);
+    }
+    
+    public static void printFlaminWarning(String message) {
+        System.out.println(YELLOW + "  🔥⚠️  " + BOLD + message + RESET);
     }
 }

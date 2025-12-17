@@ -10,13 +10,22 @@ public class App {
     private static final String GROQ_API_KEY = Config.get("GROQ_API_KEY", "");
     private static final String OPENROUTER_API_KEY = Config.get("OPENROUTER_API_KEY", "");
     
-    // Gemini keys (3 working keys)
+    // Gemini keys (14 keys for MAXIMUM load balancing)
     private static final String[] GEMINI_KEYS = {
         Config.get("GEMINI_KEY_1", ""),
         Config.get("GEMINI_KEY_2", ""),
         Config.get("GEMINI_KEY_3", ""),
         Config.get("GEMINI_KEY_4", ""),
-        Config.get("GEMINI_KEY_5", "")
+        Config.get("GEMINI_KEY_5", ""),
+        Config.get("GEMINI_KEY_6", ""),
+        Config.get("GEMINI_KEY_7", ""),
+        Config.get("GEMINI_KEY_8", ""),
+        Config.get("GEMINI_KEY_9", ""),
+        Config.get("GEMINI_KEY_10", ""),
+        Config.get("GEMINI_KEY_11", ""),
+        Config.get("GEMINI_KEY_12", ""),
+        Config.get("GEMINI_KEY_13", ""),
+        Config.get("GEMINI_KEY_14", "")
     };
     
     public static void main(String[] args) {
@@ -27,32 +36,24 @@ public class App {
         LLMCouncil council = new LLMCouncil();
         ConversationManager conversationManager = new ConversationManager();
         
-        CLIRenderer.printSystemMessage("Initializing AI Council with multiple providers...");
-        System.out.println();
-        
-        // Add Groq models (fast and free!)
+        // Initialize models silently
         addGroqModels(council);
-        
-        // Add OpenRouter models (diverse selection)
         addOpenRouterModels(council);
-        
-        // Add Gemini models (3 working keys with gemini-2.5-flash-lite)
         addGeminiModels(council);
         
-        System.out.println();
-        
         if (council.getMemberCount() == 0) {
-            CLIRenderer.printError("No AI models available! Please check your API keys.");
-            CLIRenderer.printSystemMessage("Press Enter to exit...");
-            try {
-                new BufferedReader(new InputStreamReader(System.in)).readLine();
-            } catch (Exception e) {
-                // Ignore
-            }
+            CLIRenderer.printError("❌ No AI models available! Check your API keys.");
             return;
         }
         
-        CLIRenderer.printSuccess("Council initialized with " + council.getMemberCount() + " model(s)");
+        // Perform health checks
+        council.performHealthChecks();
+        
+        int healthyCount = council.getHealthyMemberCount();
+        if (healthyCount == 0) {
+            CLIRenderer.printError("❌ No healthy models found! Check your API keys.");
+            return;
+        }
         CLIRenderer.printSystemMessage("Type 'help' for available commands");
         System.out.println();
         
@@ -140,7 +141,6 @@ public class App {
     }
     
     private static void addGroqModels(LLMCouncil council) {
-        // Groq models - fast and efficient
         String[][] groqModels = {
             {"groq-llama-3.3-70b", "llama-3.3-70b-versatile"},
             {"groq-llama-3.1-8b", "llama-3.1-8b-instant"},
@@ -151,13 +151,12 @@ public class App {
             try {
                 council.addMember(new GroqClient(model[0], GROQ_API_KEY, model[1]));
             } catch (Exception e) {
-                CLIRenderer.printWarning("Failed to add " + model[0]);
+                // Silent failure
             }
         }
     }
     
     private static void addOpenRouterModels(LLMCouncil council) {
-        // OpenRouter models - diverse and powerful
         String[][] openRouterModels = {
             {"openrouter-deepseek", "deepseek/deepseek-chat"},
             {"openrouter-llama-3.1-8b", "meta-llama/llama-3.1-8b-instruct:free"},
@@ -169,13 +168,13 @@ public class App {
             try {
                 council.addMember(new OpenRouterClient(model[0], OPENROUTER_API_KEY, model[1]));
             } catch (Exception e) {
-                CLIRenderer.printWarning("Failed to add " + model[0]);
+                // Silent failure
             }
         }
     }
     
     private static void addGeminiModels(LLMCouncil council) {
-        // Gemini models - using gemini-2.5-flash-lite (smaller model as requested)
+        // Gemini models - using gemini-2.5-flash-lite for speed and efficiency
         String model = "gemini-2.5-flash-lite";
         
         for (int i = 0; i < GEMINI_KEYS.length; i++) {
@@ -185,35 +184,45 @@ public class App {
                     String name = "gemini-" + (i + 1);
                     council.addMember(new GeminiClient(name, key, model));
                 } catch (Exception e) {
-                    CLIRenderer.printWarning("Failed to add gemini-" + (i + 1));
+                    // Silent failure
                 }
             }
         }
     }
     
     private static void printModelStatus(LLMCouncil council) {
-        System.out.println();
-        CLIRenderer.printSeparator();
-        System.out.println(BOLD + "  AVAILABLE MODELS:" + RESET);
-        System.out.println();
+        CLIRenderer.printFlaminHeader("🔥 FLAMIN' MODEL STATUS 🔥");
         
         List<LLMClient> members = council.getAllMembers();
+        int healthyCount = council.getHealthyMemberCount();
+        
+        CLIRenderer.printFlaminSuccess("Total Models: " + members.size() + " | Healthy: " + healthyCount + " | Load Balanced: YES");
+        System.out.println();
+        
         for (LLMClient client : members) {
             String provider = "Unknown";
             String modelId = "N/A";
             
             if (client instanceof GroqClient) {
                 provider = "Groq";
-                modelId = "Fast inference";
+                modelId = "Lightning Fast ⚡";
             } else if (client instanceof OpenRouterClient) {
                 provider = "OpenRouter";
-                modelId = "Free tier";
+                modelId = "Diverse & Free 🌟";
             } else if (client instanceof GeminiClient) {
                 provider = "Gemini";
-                modelId = "Google AI";
+                modelId = "Google Power 🚀";
             }
             
-            CLIRenderer.printModelStatus(client.getName(), provider, modelId, client.isAvailable());
+            // Show health status instead of just availability
+            boolean isHealthy = client.isHealthy();
+            CLIRenderer.printModelStatus(client.getName(), provider, modelId, isHealthy);
+            
+            // Show usage stats
+            if (client.getUsageCount() > 0) {
+                System.out.println("    📊 Usage: " + client.getUsageCount() + " requests | Last used: " + 
+                    (System.currentTimeMillis() - client.getLastUsed()) / 1000 + "s ago");
+            }
         }
         
         System.out.println();

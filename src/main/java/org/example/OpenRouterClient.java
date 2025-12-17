@@ -86,9 +86,11 @@ public class OpenRouterClient extends LLMClient {
                         if (choices.size() > 0) {
                             JsonObject choice = choices.get(0).getAsJsonObject();
                             JsonObject messageObj = choice.getAsJsonObject("message");
+                            markUsed(); // Track usage for load balancing
                             return messageObj.get("content").getAsString();
                         }
                     }
+                    markUsed(); // Track usage even for empty responses
                     return "No response generated";
                 }
             } else {

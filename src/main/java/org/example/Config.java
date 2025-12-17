@@ -42,20 +42,11 @@ public class Config {
         String openRouterKey = System.getenv("OPENROUTER_API_KEY");
         if (openRouterKey != null) props.setProperty("OPENROUTER_API_KEY", openRouterKey);
         
-        String gemini1 = System.getenv("GEMINI_KEY_1");
-        if (gemini1 != null) props.setProperty("GEMINI_KEY_1", gemini1);
-        
-        String gemini2 = System.getenv("GEMINI_KEY_2");
-        if (gemini2 != null) props.setProperty("GEMINI_KEY_2", gemini2);
-        
-        String gemini3 = System.getenv("GEMINI_KEY_3");
-        if (gemini3 != null) props.setProperty("GEMINI_KEY_3", gemini3);
-        
-        String gemini4 = System.getenv("GEMINI_KEY_4");
-        if (gemini4 != null) props.setProperty("GEMINI_KEY_4", gemini4);
-        
-        String gemini5 = System.getenv("GEMINI_KEY_5");
-        if (gemini5 != null) props.setProperty("GEMINI_KEY_5", gemini5);
+        // Load all 14 Gemini keys
+        for (int i = 1; i <= 14; i++) {
+            String geminiKey = System.getenv("GEMINI_KEY_" + i);
+            if (geminiKey != null) props.setProperty("GEMINI_KEY_" + i, geminiKey);
+        }
         
         String n8nUrl = System.getenv("N8N_WEBHOOK_URL");
         if (n8nUrl != null) props.setProperty("N8N_WEBHOOK_URL", n8nUrl);

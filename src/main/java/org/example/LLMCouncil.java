@@ -11,11 +11,63 @@ public class LLMCouncil {
     private LLMClient chairman;
     private int totalInputTokens = 0;
     private int totalOutputTokens = 0;
+    private int roundRobinIndex = 0; // For proper round-robin load balancing
     
     public LLMCouncil() {
         this.members = new ArrayList<>();
-        this.executor = Executors.newFixedThreadPool(8);
+        this.executor = Executors.newFixedThreadPool(12); // Increased for more Gemini models
         this.ultimateFallback = new FallbackClient();
+    }
+    
+    // Perform health checks on all members (streamlined)
+    public void performHealthChecks() {
+        CLIRenderer.printProgress("🔍 Health checking " + members.size() + " models");
+        
+        List<Future<Boolean>> healthFutures = new ArrayList<>();
+        
+        for (LLMClient client : members) {
+            healthFutures.add(executor.submit(() -> {
+                boolean healthy = client.performHealthCheck();
+                if (healthy) {
+                    CLIRenderer.printDot(); // Just show progress dots
+                }
+                return healthy;
+            }));
+        }
+        
+        // Wait for all health checks to complete
+        for (Future<Boolean> future : healthFutures) {
+            try {
+                future.get(10, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                // Health check failed
+            }
+        }
+        
+        int healthyCount = getHealthyMemberCount();
+        CLIRenderer.printProgressDone();
+        CLIRenderer.printSuccess("🚀 " + healthyCount + "/" + members.size() + " models ready | Load balancing: ON");
+    }
+    
+    // Get count of healthy members
+    public int getHealthyMemberCount() {
+        return (int) members.stream().filter(LLMClient::isHealthy).count();
+    }
+    
+    // Get least used healthy model for load balancing
+    public LLMClient getLeastUsedHealthyModel() {
+        return members.stream()
+                .filter(LLMClient::isHealthy)
+                .min((a, b) -> Integer.compare(a.getUsageCount(), b.getUsageCount()))
+                .orElse(null);
+    }
+    
+    // Get least recently used healthy model
+    public LLMClient getLeastRecentlyUsedHealthyModel() {
+        return members.stream()
+                .filter(LLMClient::isHealthy)
+                .min((a, b) -> Long.compare(a.getLastUsed(), b.getLastUsed()))
+                .orElse(null);
     }
     
     public void addMember(LLMClient client) {
@@ -24,12 +76,7 @@ public class LLMCouncil {
             // First Groq model becomes chairman
             if (chairman == null && client.getName().toLowerCase().contains("groq")) {
                 chairman = client;
-                CLIRenderer.printSuccess("Added " + client.getName() + " to council [CHAIRMAN]");
-            } else {
-                CLIRenderer.printSuccess("Added " + client.getName() + " to council");
             }
-        } else {
-            CLIRenderer.printWarning("Cannot add " + client.getName() + " - not available");
         }
     }
     
@@ -47,12 +94,26 @@ public class LLMCouncil {
     }
     
     public LLMClient getFirstAvailable() {
-        for (LLMClient client : members) {
-            if (client.isAvailable()) {
-                return client;
+        // Get healthy models only
+        List<LLMClient> healthyModels = members.stream()
+                .filter(LLMClient::isHealthy)
+                .collect(java.util.stream.Collectors.toList());
+        
+        if (healthyModels.isEmpty()) {
+            // Fallback to any available model
+            for (LLMClient client : members) {
+                if (client.isAvailable()) {
+                    return client;
+                }
             }
+            return null;
         }
-        return null;
+        
+        // Round-robin through healthy models
+        LLMClient selected = healthyModels.get(roundRobinIndex % healthyModels.size());
+        roundRobinIndex = (roundRobinIndex + 1) % healthyModels.size();
+        
+        return selected;
     }
     
     public void askCouncil(String message, ConversationManager conversationManager) {
@@ -185,13 +246,15 @@ public class LLMCouncil {
     public void askSingle(String llmName, String message, ConversationManager conversationManager) {
         LLMClient client = getMember(llmName);
         if (client == null) {
-            CLIRenderer.printWarning("Model '" + llmName + "' not found - trying first available");
+            // Use load balancer
             client = getFirstAvailable();
             if (client == null) {
-                CLIRenderer.printWarning("No models available - using ultimate fallback");
+                CLIRenderer.printFlaminWarning("No healthy models available - using ultimate fallback");
                 tryUltimateFallback(message, conversationManager);
                 return;
             }
+            // Show load balancing info
+            CLIRenderer.printLoadBalanceInfo(client.getName(), client.getUsageCount());
         }
         
         try {

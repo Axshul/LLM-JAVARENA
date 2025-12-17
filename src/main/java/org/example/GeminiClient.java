@@ -90,10 +90,12 @@ public class GeminiClient extends LLMClient {
                             JsonObject contentObj = candidate.getAsJsonObject("content");
                             JsonArray partsArray = contentObj.getAsJsonArray("parts");
                             if (partsArray.size() > 0) {
+                                markUsed(); // Track usage for load balancing
                                 return partsArray.get(0).getAsJsonObject().get("text").getAsString();
                             }
                         }
                     }
+                    markUsed(); // Track usage even for empty responses
                     return "No response generated";
                 }
             } else {
