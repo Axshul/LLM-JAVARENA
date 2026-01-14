@@ -156,20 +156,14 @@ public class LLMCouncil {
             }));
         }
         
-        // Collect responses - only show successful ones
-        System.out.println();
+        // Collect responses
         for (Future<CouncilResponse> future : futures) {
             try {
                 CouncilResponse response = future.get(45, TimeUnit.SECONDS);
                 if (response.error == null && response.message != null) {
                     successfulResponses.add(response);
-                    String color = CLIRenderer.getColorForLLM(response.llmName);
-                    CLIRenderer.printLLMResponse(response.llmName, response.message, color);
-                    if (response.inputTokens > 0) {
-                        CLIRenderer.printTokenInfo(response.llmName, response.inputTokens, response.outputTokens);
-                        totalInputTokens += response.inputTokens;
-                        totalOutputTokens += response.outputTokens;
-                    }
+                    totalInputTokens += response.inputTokens;
+                    totalOutputTokens += response.outputTokens;
                 }
             } catch (TimeoutException e) {
                 // Silently skip timeout
@@ -185,24 +179,25 @@ public class LLMCouncil {
         }
         
         // Chairman evaluates and picks the best response
+        CouncilResponse bestResponse = null;
         if (chairman != null && successfulResponses.size() > 1) {
             System.out.println();
             CLIRenderer.printSystemMessage("Chairman is evaluating responses...");
-            String bestResponse = evaluateResponses(message, successfulResponses);
-            if (bestResponse != null) {
-                conversationManager.addLLMMessage(bestResponse, "Council-Best");
-            } else {
-                // Add first successful response if evaluation fails
-                conversationManager.addLLMMessage(successfulResponses.get(0).message, successfulResponses.get(0).llmName);
-            }
-        } else if (!successfulResponses.isEmpty()) {
-            conversationManager.addLLMMessage(successfulResponses.get(0).message, successfulResponses.get(0).llmName);
+            bestResponse = evaluateResponses(message, successfulResponses);
         }
+        
+        if (bestResponse == null) {
+            bestResponse = successfulResponses.get(0);
+        }
+        
+        String color = CLIRenderer.getColorForLLM(bestResponse.llmName);
+        CLIRenderer.printLLMResponse(bestResponse.llmName, bestResponse.message, color, bestResponse.inputTokens, bestResponse.outputTokens);
+        conversationManager.addLLMMessage(bestResponse.message, bestResponse.llmName, bestResponse.inputTokens, bestResponse.outputTokens);
         
         CLIRenderer.printCouncilFooter(successfulResponses.size(), members.size());
     }
     
-    private String evaluateResponses(String originalQuestion, List<CouncilResponse> responses) {
+    private CouncilResponse evaluateResponses(String originalQuestion, List<CouncilResponse> responses) {
         try {
             StringBuilder evaluation = new StringBuilder();
             evaluation.append("Question: ").append(originalQuestion).append("\n\n");
@@ -222,11 +217,11 @@ public class LLMCouncil {
                 int bestIndex = Integer.parseInt(numberStr) - 1;
                 if (bestIndex >= 0 && bestIndex < responses.size()) {
                     CLIRenderer.printSuccess("Chairman selected response #" + (bestIndex + 1) + " from " + responses.get(bestIndex).llmName);
-                    return responses.get(bestIndex).message;
+                    return responses.get(bestIndex);
                 }
             }
         } catch (Exception e) {
-            // If evaluation fails, return first response
+            // If evaluation fails, return null
         }
         return null;
     }
@@ -236,7 +231,7 @@ public class LLMCouncil {
             CLIRenderer.printSystemMessage("Contacting ultimate fallback system...");
             String response = ultimateFallback.sendMessage(message);
             String color = CLIRenderer.getColorForLLM("fallback");
-            CLIRenderer.printLLMResponse("Ultimate-Fallback", response, color);
+            CLIRenderer.printLLMResponse("Ultimate-Fallback", response, color, 0, 0);
             conversationManager.addLLMMessage(response, "Ultimate-Fallback");
         } catch (Exception e) {
             CLIRenderer.printError("Ultimate fallback also failed. Please check your internet connection.");
@@ -267,7 +262,6 @@ public class LLMCouncil {
             
             String response = client.sendMessage(message);
             String color = CLIRenderer.getColorForLLM(client.getName());
-            CLIRenderer.printLLMResponse(client.getName(), response, color);
             
             // Show token info
             int inTokens = 0, outTokens = 0;
@@ -284,14 +278,12 @@ public class LLMCouncil {
                 inTokens = gc.getInputTokens();
                 outTokens = gc.getOutputTokens();
             }
+            CLIRenderer.printLLMResponse(client.getName(), response, color, inTokens, outTokens);
             
-            if (inTokens > 0) {
-                CLIRenderer.printTokenInfo(client.getName(), inTokens, outTokens);
-                totalInputTokens += inTokens;
-                totalOutputTokens += outTokens;
-            }
+            totalInputTokens += inTokens;
+            totalOutputTokens += outTokens;
             
-            conversationManager.addLLMMessage(response, client.getName());
+            conversationManager.addLLMMessage(response, client.getName(), inTokens, outTokens);
         } catch (Exception e) {
             CLIRenderer.printWarning(client.getName() + " didn't work - trying fallback");
             
@@ -308,7 +300,6 @@ public class LLMCouncil {
                     
                     String response = fallback.sendMessage(message);
                     String color = CLIRenderer.getColorForLLM(fallback.getName());
-                    CLIRenderer.printLLMResponse(fallback.getName(), response, color);
                     
                     int inTokens = 0, outTokens = 0;
                     if (fallback instanceof GeminiClient) {
@@ -324,14 +315,12 @@ public class LLMCouncil {
                         inTokens = gc.getInputTokens();
                         outTokens = gc.getOutputTokens();
                     }
+                    CLIRenderer.printLLMResponse(fallback.getName(), response, color, inTokens, outTokens);
                     
-                    if (inTokens > 0) {
-                        CLIRenderer.printTokenInfo(fallback.getName(), inTokens, outTokens);
-                        totalInputTokens += inTokens;
-                        totalOutputTokens += outTokens;
-                    }
+                    totalInputTokens += inTokens;
+                    totalOutputTokens += outTokens;
                     
-                    conversationManager.addLLMMessage(response, fallback.getName());
+                    conversationManager.addLLMMessage(response, fallback.getName(), inTokens, outTokens);
                 } catch (Exception e2) {
                     CLIRenderer.printWarning("All models failed - using ultimate fallback");
                     tryUltimateFallback(message, conversationManager);

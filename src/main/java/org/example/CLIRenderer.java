@@ -37,16 +37,25 @@ public class CLIRenderer {
     
     public static void printBanner() {
         clear();
-        System.out.println();
-        System.out.println(CYAN + BOLD + "  ╔══════════════════════════════════════════════════════════════════════════╗" + RESET);
-        System.out.println(CYAN + BOLD + "  ║" + RESET + "                                                                      " + CYAN + BOLD + "║" + RESET);
-        System.out.println(CYAN + BOLD + "  ║" + RESET + "              " + RED + BOLD + "🔥 AI COUNCIL ARENA v2.0 🔥" + RESET + "                      " + CYAN + BOLD + "║" + RESET);
-        System.out.println(CYAN + BOLD + "  ║" + RESET + "              " + WHITE + "Multi-Provider AI Command Center" + RESET + "              " + CYAN + BOLD + "║" + RESET);
-        System.out.println(CYAN + BOLD + "  ║" + RESET + "                                                                      " + CYAN + BOLD + "║" + RESET);
-        System.out.println(CYAN + BOLD + "  ╚══════════════════════════════════════════════════════════════════════════╝" + RESET);
+        printCoolerBanner();
         System.out.println();
         System.out.println(DIM + "  ⚡ Groq • OpenRouter • 14x Gemini APIs • Load Balanced • Health Monitored" + RESET);
         System.out.println();
+    }
+
+    private static void printCoolerBanner() {
+        String[] banner = {
+            "  █████╗ ██╗██╗     ██╗   ██╗███╗   ██╗ ██████╗██╗  ██╗██╗   ██╗",
+            " ██╔══██╗██║██║     ██║   ██║████╗  ██║██╔════╝██║  ██║╚██╗ ██╔╝",
+            " ███████║██║██║     ██║   ██║██╔██╗ ██║██║     ███████║ ╚████╔╝ ",
+            " ██╔══██║██║██║     ██║   ██║██║╚██╗██║██║     ██╔══██║  ╚██╔╝  ",
+            " ██║  ██║██║███████╗╚██████╔╝██║ ╚████║╚██████╗██║  ██║   ██║   ",
+            " ╚═╝  ╚═╝╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝╚═╝  ╚═╝   ╚═╝   "
+        };
+        String[] colors = {RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA};
+        for (int i = 0; i < banner.length; i++) {
+            System.out.println(colors[i] + banner[i] + RESET);
+        }
     }
     
     public static void clear() {
@@ -62,27 +71,31 @@ public class CLIRenderer {
         System.out.println(CYAN + "  +---------------------------------------------------------------------------+" + RESET);
     }
     
-    public static void printLLMResponse(String llmName, String message, String color) {
+    public static void printLLMResponse(String llmName, String message, String color, int inputTokens, int outputTokens) {
         responseCounter++;
         System.out.println();
-        System.out.println(color + "  +---------------------------------------------------------------------------+" + RESET);
-        System.out.println(color + "  |" + RESET + color + BOLD + " [" + responseCounter + "] " + llmName.toUpperCase() + RESET + color + " " + getProviderEmoji(llmName) + RESET);
-        System.out.println(color + "  +---------------------------------------------------------------------------+" + RESET);
-        
+        String provider = getProviderName(llmName);
+        String providerBadge = getProviderBadge(provider);
+        System.out.println(color + "  ╔═══════════════════════════════════════════════════════════════════════════╗" + RESET);
+        System.out.println(color + "  ║ " + providerBadge + " " + BOLD + llmName.toUpperCase() + RESET + " " + DIM + "responded..." + RESET);
+        System.out.println(color + "  ╟───────────────────────────────────────────────────────────────────────────╢" + RESET);
+
         // Wrap text to fit in box
         String[] lines = wrapTextMultiLine(message, 73);
         for (String line : lines) {
-            System.out.println(color + "  | " + RESET + color + line + RESET);
+            System.out.println(color + "  ║ " + RESET + WHITE + line + RESET);
         }
-        
-        System.out.println(color + "  +---------------------------------------------------------------------------+" + RESET);
+
+        System.out.println(color + "  ╟───────────────────────────────────────────────────────────────────────────╢" + RESET);
+        System.out.println(color + "  ║ " + DIM + "Tokens: " + GREEN + inputTokens + " in" + RESET + DIM + " / " + BLUE + outputTokens + " out" + RESET + DIM + " | Total: " + (inputTokens + outputTokens) + RESET);
+        System.out.println(color + "  ╚═══════════════════════════════════════════════════════════════════════════╝" + RESET);
     }
-    
-    private static String getProviderEmoji(String llmName) {
-        if (llmName.toLowerCase().contains("groq")) return "[GROQ]";
-        if (llmName.toLowerCase().contains("openrouter")) return "[OPENROUTER]";
-        if (llmName.toLowerCase().contains("gemini")) return "[GEMINI]";
-        return "[AI]";
+
+    private static String getProviderName(String llmName) {
+        if (llmName.toLowerCase().contains("groq")) return "groq";
+        if (llmName.toLowerCase().contains("openrouter")) return "openrouter";
+        if (llmName.toLowerCase().contains("gemini")) return "gemini";
+        return "ai";
     }
     
     private static String wrapText(String text, int width) {
@@ -166,9 +179,6 @@ public class CLIRenderer {
         System.out.println();
     }
     
-    public static void printTokenInfo(String llmName, int inputTokens, int outputTokens) {
-        System.out.println(DIM + "  |  Tokens: " + GREEN + inputTokens + " in" + RESET + DIM + " / " + BLUE + outputTokens + " out" + RESET + DIM + " | Total: " + (inputTokens + outputTokens) + RESET);
-    }
     
     public static void printHelp() {
         System.out.println();

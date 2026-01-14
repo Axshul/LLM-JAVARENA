@@ -6,28 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class App {
-    // API Keys loaded from .env file or environment variables
-    private static final String GROQ_API_KEY = Config.get("GROQ_API_KEY", "");
-    private static final String OPENROUTER_API_KEY = Config.get("OPENROUTER_API_KEY", "");
-    
-    // Gemini keys (14 keys for MAXIMUM load balancing)
-    private static final String[] GEMINI_KEYS = {
-        Config.get("GEMINI_KEY_1", ""),
-        Config.get("GEMINI_KEY_2", ""),
-        Config.get("GEMINI_KEY_3", ""),
-        Config.get("GEMINI_KEY_4", ""),
-        Config.get("GEMINI_KEY_5", ""),
-        Config.get("GEMINI_KEY_6", ""),
-        Config.get("GEMINI_KEY_7", ""),
-        Config.get("GEMINI_KEY_8", ""),
-        Config.get("GEMINI_KEY_9", ""),
-        Config.get("GEMINI_KEY_10", ""),
-        Config.get("GEMINI_KEY_11", ""),
-        Config.get("GEMINI_KEY_12", ""),
-        Config.get("GEMINI_KEY_13", ""),
-        Config.get("GEMINI_KEY_14", "")
-    };
-    
     public static void main(String[] args) {
         CLIRenderer.initialize();
         CLIRenderer.printBanner();
@@ -141,6 +119,9 @@ public class App {
     }
     
     private static void addGroqModels(LLMCouncil council) {
+        String groqApiKey = Config.get("GROQ_API_KEY", "");
+        if (groqApiKey.isEmpty()) return;
+
         String[][] groqModels = {
             {"groq-llama-3.3-70b", "llama-3.3-70b-versatile"},
             {"groq-llama-3.1-8b", "llama-3.1-8b-instant"},
@@ -149,7 +130,7 @@ public class App {
         
         for (String[] model : groqModels) {
             try {
-                council.addMember(new GroqClient(model[0], GROQ_API_KEY, model[1]));
+                council.addMember(new GroqClient(model[0], groqApiKey, model[1]));
             } catch (Exception e) {
                 // Silent failure
             }
@@ -157,6 +138,9 @@ public class App {
     }
     
     private static void addOpenRouterModels(LLMCouncil council) {
+        String openRouterApiKey = Config.get("OPENROUTER_API_KEY", "");
+        if (openRouterApiKey.isEmpty()) return;
+
         String[][] openRouterModels = {
             {"openrouter-deepseek", "deepseek/deepseek-chat"},
             {"openrouter-llama-3.1-8b", "meta-llama/llama-3.1-8b-instruct:free"},
@@ -166,7 +150,7 @@ public class App {
         
         for (String[] model : openRouterModels) {
             try {
-                council.addMember(new OpenRouterClient(model[0], OPENROUTER_API_KEY, model[1]));
+                council.addMember(new OpenRouterClient(model[0], openRouterApiKey, model[1]));
             } catch (Exception e) {
                 // Silent failure
             }
@@ -177,11 +161,11 @@ public class App {
         // Gemini models - using gemini-2.5-flash-lite for speed and efficiency
         String model = "gemini-2.5-flash-lite";
         
-        for (int i = 0; i < GEMINI_KEYS.length; i++) {
-            String key = GEMINI_KEYS[i];
+        for (int i = 1; i <= 14; i++) {
+            String key = Config.get("GEMINI_KEY_" + i, "");
             if (key != null && !key.isEmpty()) {
                 try {
-                    String name = "gemini-" + (i + 1);
+                    String name = "gemini-" + i;
                     council.addMember(new GeminiClient(name, key, model));
                 } catch (Exception e) {
                     // Silent failure
