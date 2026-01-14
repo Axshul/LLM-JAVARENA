@@ -12,11 +12,7 @@ public class TestGeminiKeys {
     
     // Test keys (will not be committed)
     private static final String[] TEST_KEYS = {
-        "AIzaSyDFSJrZO5-GBbJLdq8mGnejJuUwIALPec0",
-        "AIzaSyD5Ul5g0OA3CLtRO9Qcp1h6DaK2hJGKyOg",
-        "AIzaSyCmhsrtLnsCedmwOSidWg9bPFw66KwjPlsA",
-        "AIzaSyD3LbC9tsiXUOvcYRk9S_QNcltETnaOxO0",
-        "AIzaSyBJnUUqOg-KvfLF8vc3Y60uYYG8Q33TAh8"
+        "API TESTER"
     };
     
     // Models to test (actual available models from API)
